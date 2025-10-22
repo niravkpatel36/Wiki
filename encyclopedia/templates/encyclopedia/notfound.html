@@ -1,0 +1,9 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}Page Not Found{% endblock %}
+
+{% block body %}
+  <h1>404 — Page not found</h1>
+  <p>The page "{{ title }}" was not found.</p>
+  <p><a href="{% url 'encyclopedia:new_page' %}">Create it?</a></p>
+{% endblock %}
