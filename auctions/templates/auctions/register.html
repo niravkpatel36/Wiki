@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+  <h1>Register</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label>Username</label><br>
+    <input name="username" required><br>
+    <label>Email</label><br>
+    <input name="email" type="email"><br>
+    <label>Password</label><br>
+    <input type="password" name="password" required><br>
+    <label>Confirm</label><br>
+    <input type="password" name="confirmation" required><br><br>
+    <button type="submit">Register</button>
+  </form>
+{% endblock %}

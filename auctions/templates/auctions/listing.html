@@ -1,0 +1,75 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+  <h1>{{ listing.title }}</h1>
+  <p><strong>Seller:</strong> {{ listing.seller.username }}</p>
+  <p class="text-muted">
+  <strong>Category:</strong>
+  {% if listing.category %}
+    <span class="badge bg-info text-dark">{{ listing.category.name }}</span>
+  {% else %}
+    <span class="text-secondary">—</span>
+  {% endif %}
+</p>
+  <p>{{ listing.description }}</p>
+  {% if listing.image_url %}
+    <p><img src="{{ listing.image_url }}" width="250"></p>
+  {% endif %}
+
+  <p><strong>Current price:</strong> ${{ current_price }}</p>
+
+  {% if listing.active %}
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'auctions:place_bid' listing.id %}">
+        {% csrf_token %}
+        {{ bid_form.as_p }}
+        <button type="submit">Place bid</button>
+      </form>
+
+      <form method="post" action="{% url 'auctions:toggle_watch' listing.id %}">
+        {% csrf_token %}
+        <button type="submit">{% if in_watchlist %}Remove from watchlist{% else %}Add to watchlist{% endif %}</button>
+      </form>
+
+      {% if user == listing.seller %}
+        <form method="post" action="{% url 'auctions:close_auction' listing.id %}">
+          {% csrf_token %}
+          <button type="submit">Close auction</button>
+        </form>
+      {% endif %}
+    {% else %}
+      <p><a href="{% url 'auctions:login' %}">Log in</a> to bid or add to watchlist.</p>
+    {% endif %}
+  {% else %}
+    <p><strong>Listing closed.</strong></p>
+    {% if listing.winner %}
+      <p>Winner: {{ listing.winner.username }} ({{ listing.winner }})</p>
+    {% else %}
+      <p>No bids were placed.</p>
+    {% endif %}
+  {% endif %}
+
+  <hr>
+  <h3>Bids</h3>
+  {% if bids %}
+    <ul>
+      {% for b in bids %}
+        <li>{{ b.bidder.username }} — ${{ b.amount }} ({{ b.timestamp }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No bids yet.</p>
+  {% endif %}
+
+  <hr>
+  <h3>Comments</h3>
+  <form method="post" action="{% url 'auctions:add_comment' listing.id %}">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Add comment</button>
+  </form>
+  <ul>
+    {% for c in comments %}
+      <li><strong>{{ c.author.username }}</strong> ({{ c.timestamp }}): {{ c.content }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
